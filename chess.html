@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chess Game</title>
+	<link rel="stylesheet" type="text/css" href="chess.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta property="og:image" content="img/share.jpeg" />
+	<meta property="og:description" content="A complete well automated chess game made by JavaScript that contains AI. Check it out. I hope you like it." />
+	<meta name="author" content="Kunal Rijhonia">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+<div id="startscene" class="scene">
+	<div class="overlay"></div>
+	<div class="scene-content">
+		<div style="margin-bottom: 50px;">
+			<h2>Play Against</h2>
+			<div class="play-against-buttons">
+				<button class="button" id="localOponentBtn">Local</button>
+				<button class="button" id="aiOponentBtn">AI</button>
+				<button class="button" id="onlineOponentBtn">Online</button>
+			</div>
+		</div>
+		
+		<div style="margin-bottom: 50px;">
+			<h2>Select Time Control</h2>
+			<div class="time-control-buttons">
+				<button class="button" id="timeControl1Btn">1:00</button>
+				<button class="button" id="timeControl3Btn">3:00</button>
+				<button class="button" id="timeControl10Btn">10:00</button>
+			</div>
+		</div>
+
+		<div class="start-game-container">
+			<button class="button button-big" onclick="startNewGame()">Start Game</button>
+		</div>
+	</div>
+</div>
+
+<div id="endscene" class="scene">
+	<div class="overlay"></div>
+	<div class="scene-content">
+		<p class="winning-sign"></p>
+	</div>
+</div>
+	
+<div class="game-layout" style="display: none;">
+	<div class="board-container">
+		<div id="board">
+			<div class="odd">
+				<div id="81" class="square" data-square="8-a"></div>
+				<div id="82" class="square" data-square="8-b"></div>
+				<div id="83" class="square" data-square="8-c"></div>
+				<div id="84" class="square" data-square="8-d"></div>
+				<div id="85" class="square" data-square="8-e"></div>
+				<div id="86" class="square" data-square="8-f"></div>
+				<div id="87" class="square" data-square="8-g"></div>
+				<div id="88" class="square" data-square="8-h"></div>
+			</div>
+			<div class="even">
+				<div id="71" class="square" data-square="7-a"></div>
+				<div id="72" class="square" data-square="7-b"></div>
+				<div id="73" class="square" data-square="7-c"></div>
+				<div id="74" class="square" data-square="7-d"></div>
+				<div id="75" class="square" data-square="7-e"></div>
+				<div id="76" class="square" data-square="7-f"></div>
+				<div id="77" class="square" data-square="7-g"></div>
+				<div id="78" class="square" data-square="7-h"></div>
+			</div>
+			<div class="odd">
+				<div id="61" class="square" data-square="6-a"></div>
+				<div id="62" class="square" data-square="6-b"></div>
+				<div id="63" class="square" data-square="6-c"></div>
+				<div id="64" class="square" data-square="6-d"></div>
+				<div id="65" class="square" data-square="6-e"></div>
+				<div id="66" class="square" data-square="6-f"></div>
+				<div id="67" class="square" data-square="6-g"></div>
+				<div id="68" class="square" data-square="6-h"></div>
+			</div>
+			<div class="even">
+				<div id="51" class="square" data-square="5-a"></div>
+				<div id="52" class="square" data-square="5-b"></div>
+				<div id="53" class="square" data-square="5-c"></div>
+				<div id="54" class="square" data-square="5-d"></div>
+				<div id="55" class="square" data-square="5-e"></div>
+				<div id="56" class="square" data-square="5-f"></div>
+				<div id="57" class="square" data-square="5-g"></div>
+				<div id="58" class="square" data-square="5-h"></div>
+			</div>
+			<div class="odd">
+				<div id="41" class="square" data-square="4-a"></div>
+				<div id="42" class="square" data-square="4-b"></div>
+				<div id="43" class="square" data-square="4-c"></div>
+				<div id="44" class="square" data-square="4-d"></div>
+				<div id="45" class="square" data-square="4-e"></div>
+				<div id="46" class="square" data-square="4-f"></div>
+				<div id="47" class="square" data-square="4-g"></div>
+				<div id="48" class="square" data-square="4-h"></div>
+			</div>
+			<div class="even">
+				<div id="31" class="square" data-square="3-a"></div>
+				<div id="32" class="square" data-square="3-b"></div>
+				<div id="33" class="square" data-square="3-c"></div>
+				<div id="34" class="square" data-square="3-d"></div>
+				<div id="35" class="square" data-square="3-e"></div>
+				<div id="36" class="square" data-square="3-f"></div>
+				<div id="37" class="square" data-square="3-g"></div>
+				<div id="38" class="square" data-square="3-h"></div>
+			</div>
+			<div class="odd">
+				<div id="21" class="square" data-square="2-a"></div>
+				<div id="22" class="square" data-square="2-b"></div>
+				<div id="23" class="square" data-square="2-c"></div>
+				<div id="24" class="square" data-square="2-d"></div>
+				<div id="25" class="square" data-square="2-e"></div>
+				<div id="26" class="square" data-square="2-f"></div>
+				<div id="27" class="square" data-square="2-g"></div>
+				<div id="28" class="square" data-square="2-h"></div>
+			</div>
+			<div class="even">
+				<div id="11" class="square" data-square="1-a"></div>
+				<div id="12" class="square" data-square="1-b"></div>
+				<div id="13" class="square" data-square="1-c"></div>
+				<div id="14" class="square" data-square="1-d"></div>
+				<div id="15" class="square" data-square="1-e"></div>
+				<div id="16" class="square" data-square="1-f"></div>
+				<div id="17" class="square" data-square="1-g"></div>
+				<div id="18" class="square" data-square="1-h"></div>
+			</div>
+		</div>
+		<!-- <button class="flip-board" onclick="boardAnimate()">Flip Board</button> -->
+	</div>
+
+	<div class="right-panel">
+		<div class="game-info">
+			<p id="turn">White's Turn</p>
+			<div class="theme-selector">
+				<h3>Board Theme</h3>
+				<div class="theme-buttons">
+					<button class="theme-btn" data-theme="classic">Classic</button>
+					<button class="theme-btn" data-theme="modern">Modern</button>
+					<button class="theme-btn" data-theme="dark">Dark</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="game-controls">
+			<button id="newGameBtn">New Game</button>
+			<button id="flipBoardBtn" class="control-btn">Flip Board</button>
+			<div class="move-controls">
+				<button id="undoMoveBtn" class="control-btn">Undo</button>
+				<button id="redoMoveBtn" class="control-btn">Redo</button>
+			</div>
+			<div class="timer-container">
+				<div class="timer white-timer" id="whiteTimer">10:00</div>
+				<div class="timer black-timer" id="blackTimer">10:00</div>
+			</div>
+		</div>
+
+		<!-- Chat Section (only visible in online mode) -->
+		<div id="chatSection" class="chat-section" style="display: none;">
+			<div class="chat-header">
+				<h3>Game Chat</h3>
+				<button id="toggleChatBtn" class="toggle-btn">−</button>
+			</div>
+			<div class="chat-messages" id="chatMessages"></div>
+			<div class="chat-input">
+				<input type="text" id="chatInput" placeholder="Type your message...">
+				<button id="sendMessageBtn">Send</button>
+			</div>
+		</div>
+
+		<div class="semataries">
+			<div id="whiteSematary" class="sematary">
+				<div class="pawn"></div>
+				<div class="knight"></div>
+				<div class="bishop"></div>
+				<div class="rook"></div>
+				<div class="queen"></div>
+			</div>
+
+			<div id="blackSematary" class="sematary">
+				<div class="pawn"></div>
+				<div class="knight"></div>
+				<div class="bishop"></div>
+				<div class="rook"></div>
+				<div class="queen"></div>
+			</div>
+		</div>
+
+		<div class="move-history-container">
+			<h3>Move History</h3>
+			<div id="moveHistory" class="move-history"></div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="piece.js"></script>
+<script type="text/javascript" src="History.js"></script>
+<script type="text/javascript" src="Game.js"></script>
+<script type="text/javascript" src="SimulationGame.js"></script>
+<script type="text/javascript" src="ai.js"></script>
+<script type="text/javascript" src="Board.js"></script>
+
+<script>
+	let game;
+	let socket;
+	let currentGameId;
+	let playerColor;
+	let moveHistory = [];
+	let currentTheme = 'classic';
+	let chatSection = document.getElementById('chatSection');
+	let chatInput = document.getElementById('chatInput');
+	let chatMessages = document.getElementById('chatMessages');
+
+	let selectedOponent = 'local';
+	let selectedTime = 600;
+
+	// Start the game when the page loads
+	window.onload = function() {
+		// Create single game instance
+		game = new Game(pieces, 'white');
+		
+		// Show the start scene initially
+		document.getElementById('startscene').classList.add('show');
+
+		// Add event listeners for new game button
+		document.getElementById('newGameBtn').addEventListener('click', resetGame);
+		document.getElementById('flipBoardBtn').addEventListener('click', flipBoard);
+		document.getElementById('undoMoveBtn').addEventListener('click', undoLastMove);
+
+		// Add theme selector event listeners
+		document.querySelectorAll('.theme-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const theme = btn.dataset.theme;
+				setTheme(theme);
+			});
+		});
+
+		// Set initial theme
+		setTheme('classic');
+
+		// Add event listeners for Play Against buttons
+		document.getElementById('localOponentBtn').addEventListener('click', () => selectOponent('local'));
+		document.getElementById('aiOponentBtn').addEventListener('click', () => selectOponent('ai'));
+		document.getElementById('onlineOponentBtn').addEventListener('click', () => selectOponent('online'));
+
+		// Add event listeners for Time Control buttons
+		document.getElementById('timeControl1Btn').addEventListener('click', () => selectTime(60));
+		document.getElementById('timeControl3Btn').addEventListener('click', () => selectTime(180));
+		document.getElementById('timeControl10Btn').addEventListener('click', () => selectTime(600));
+
+		// Set initial active state for buttons
+		document.getElementById('localOponentBtn').classList.add('active');
+		document.getElementById('timeControl10Btn').classList.add('active');
+
+		initTimers();
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+		// Add event listeners for chat
+		document.getElementById('toggleChatBtn').addEventListener('click', () => {
+			chatSection.classList.toggle('collapsed');
+			document.getElementById('toggleChatBtn').textContent = 
+				chatSection.classList.contains('collapsed') ? '+' : '−';
+		});
+
+		document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+		chatInput.addEventListener('keypress', (e) => {
+			if (e.key === 'Enter') {
+				sendMessage();
+			}
+		});
+	};
+
+	// Theme switching function
+	function setTheme(theme) {
+		console.log('setTheme called with theme:', theme);
+		currentTheme = theme;
+		document.getElementById('board').setAttribute('data-theme', theme);
+		console.log('Board data-theme set to:', document.getElementById('board').getAttribute('data-theme'));
+		
+		// Update active state of theme buttons
+		document.querySelectorAll('.theme-btn').forEach(btn => {
+			btn.classList.remove('active');
+			if (btn.dataset.theme === theme) {
+				btn.classList.add('active');
+			}
+		});
+	}
+
+	// Flip board function
+	function flipBoard() {
+		const board = document.getElementById('board');
+		const currentRotation = board.style.transform;
+		const newRotation = currentRotation === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
+		board.style.transform = newRotation;
+	}
+
+	// Undo last move function
+	function undoLastMove() {
+		if (game) {
+			const move = game.undoMove();
+			if (move) {
+				updateMoveHistory();
+				switchTimer();
+			}
+		}
+	}
+
+	// Update move history display
+	function updateMoveHistory() {
+		const historyElement = document.getElementById('moveHistory');
+		historyElement.innerHTML = '';
+		moveHistory.forEach(move => {
+			const moveElement = document.createElement('div');
+			moveElement.textContent = move.notation;
+			historyElement.appendChild(moveElement);
+		});
+		historyElement.scrollTop = historyElement.scrollHeight;
+	}
+
+	// Modify the existing addMoveToHistory function
+	function addMoveToHistory(notation) {
+		moveHistory.push({ notation });
+		updateMoveHistory();
+	}
+
+	// Select Oponent function
+	function selectOponent(oponent) {
+		console.log('Selected Oponent:', oponent);
+		selectedOponent = oponent;
+		document.querySelectorAll('.play-against-buttons .button').forEach(btn => {
+			btn.classList.remove('active');
+		});
+		document.getElementById(oponent + 'OponentBtn').classList.add('active');
+	}
+
+	// Select Time function
+	function selectTime(time) {
+		console.log('Selected Time:', time);
+		selectedTime = time;
+		whiteTime = time;
+		blackTime = time;
+		updateTimerDisplay();
+		document.querySelectorAll('.time-control-buttons .button').forEach(btn => {
+			btn.classList.remove('active');
+		});
+
+		// Add active class to the clicked button based on time value
+		if (time === 60) {
+			document.getElementById('timeControl1Btn').classList.add('active');
+		} else if (time === 180) {
+			document.getElementById('timeControl3Btn').classList.add('active');
+		} else if (time === 600) {
+			document.getElementById('timeControl10Btn').classList.add('active');
+		}
+	}
+
+	// Timer variables
+	let whiteTime = 600; // 10 minutes in seconds
+	let blackTime = 600;
+	let timerInterval;
+	let currentPlayer = 'white';
+
+	// Initialize timers
+	function initTimers() {
+		updateTimerDisplay();
+	}
+
+	// Update timer display
+	function updateTimerDisplay() {
+		document.getElementById('whiteTimer').textContent = formatTime(whiteTime);
+		document.getElementById('blackTimer').textContent = formatTime(blackTime);
+	}
+
+	// Format seconds to MM:SS
+	function formatTime(seconds) {
+		const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+		const secs = (seconds % 60).toString().padStart(2, '0');
+		return `${mins}:${secs}`;
+	}
+
+	// Start the timer
+	function startTimer() {
+		clearInterval(timerInterval);
+		timerInterval = setInterval(() => {
+			if (game.turn === 'white') {
+				whiteTime--;
+				if (whiteTime <= 0) {
+					clearInterval(timerInterval);
+					game.timeOut('white');
+					document.getElementById('endscene').classList.add('show');
+					document.querySelector('#endscene .winning-sign').textContent = "Black wins by Time!";
+					game.createConfetti();
+				}
+			} else {
+				blackTime--;
+				if (blackTime <= 0) {
+					clearInterval(timerInterval);
+					game.timeOut('black');
+					document.getElementById('endscene').classList.add('show');
+					document.querySelector('#endscene .winning-sign').textContent = "White wins by Time!";
+					game.createConfetti();
+				}
+			}
+			updateTimerDisplay();
+		}, 1000);
+	}
+
+	// Switch timer to other player
+	function switchTimer() {
+		clearInterval(timerInterval);
+		startTimer();
+	}
+
+	// Reset game (called by New Game button)
+	function resetGame() {
+		// Create new game instance
+		game = new Game(pieces, 'white');
+		startNewGame();
+	}
+
+	// Start a new game with selected options
+	function startNewGame() {
+		if (selectedOponent === 'online') {
+			// Initialize socket connection
+			socket = io();
+			
+			// Set up socket event listeners
+			socket.on('waitingForOpponent', () => {
+				document.getElementById('turn').textContent = 'Waiting for opponent...';
+			});
+
+			socket.on('gameFound', ({ gameId, color }) => {
+				currentGameId = gameId;
+				playerColor = color;
+				game = new Game(pieces, color);
+				startBoard(game, { 
+					playAgainst: 'online', 
+					aiColor: null, 
+					aiLevel: null, 
+					timeControl: selectedTime,
+					handleOnlineMove: handleMove
+				});
+				document.getElementById('turn').textContent = 
+					color === 'white' ? "Your turn (White)" : "Opponent's turn (Black)";
+				
+				// Show chat section for online games
+				chatSection.style.display = 'block';
+			});
+
+			socket.on('opponentMove', (move) => {
+				// Handle opponent's move
+				console.log(`Received opponent move:`, move, `on ${playerColor} client`);
+				const { pieceName, from, to } = move; /* Destructure the move object */
+
+				const fromPos = parseInt(from, 10);
+				const toPos = parseInt(to, 10);
+
+				// No need to getPieceByPos if pieceName is already sent
+				game.movePiece(pieceName, toPos, true); // Pass true for isOnlineOpponentMove
+				document.getElementById('turn').textContent = "Your turn";
+			});
+
+			socket.on('opponentDisconnected', () => {
+				alert('Opponent disconnected. Game ended.');
+				resetGame();
+			});
+
+			socket.on('chatMessage', (message) => {
+				addChatMessage(message, message.isSent);
+			});
+
+			// Start looking for a game
+			socket.emit('findGame');
+		} else {
+			// Existing local/AI game logic
+			game = new Game(pieces, 'white');
+			startBoard(game, { 
+				playAgainst: selectedOponent, 
+				aiColor: 'black', 
+				aiLevel: 'medium', 
+				timeControl: selectedTime,
+				handleOnlineMove: selectedOponent === 'online' ? handleMove : null /* Pass handleMove for online mode */
+			});
+		}
+
+		whiteTime = selectedTime; // Reset timers to selected time
+		blackTime = selectedTime;
+		updateTimerDisplay();
+		clearInterval(timerInterval); // Clear any running timer
+		startTimer(); // Start the timer immediately
+
+		const startscene = document.getElementById('startscene');
+		// Hide startscene with transition
+		startscene.classList.remove('show');
+		startscene.style.opacity = '0';
+		startscene.style.visibility = 'hidden';
+
+		// Set display to none after transition completes (0.5s from CSS transition)
+		setTimeout(() => {
+			startscene.style.display = 'none';
+		}, 500); 
+
+		document.querySelector('.game-layout').style.display = 'flex'; // Show the game layout
+
+		// Listen for pieceMove events to update move history
+		game.on('pieceMove', move => {
+			if (move.notation) {
+				addMoveToHistory(move.notation);
+			}
+		});
+
+		// Listen for turn changes to switch timer
+		game.on('turnChange', () => {
+			switchTimer();
+		});
+	}
+
+	// Modify the move handling in your Game class or wherever moves are processed
+	function handleMove(pieceName, from, to) {
+		if (selectedOponent === 'online') {
+			// Send move to server
+			console.log(`Sending move: ${from}-${to} with piece ${pieceName} from ${playerColor} client`);
+			socket.emit('makeMove', {
+				gameId: currentGameId,
+				move: { pieceName, from, to } /* Send pieceName along with from/to */
+			});
+			document.getElementById('turn').textContent = "Opponent's turn";
+		}
+		// ... rest of move handling logic ...
+	}
+
+	function sendMessage() {
+		const message = chatInput.value.trim();
+		if (message && socket && currentGameId) {
+			socket.emit('sendMessage', {
+				gameId: currentGameId,
+				message: message
+			});
+			chatInput.value = '';
+		}
+	}
+
+	function addChatMessage(message, isSent) {
+		const messageElement = document.createElement('div');
+		messageElement.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+		messageElement.textContent = message.text;
+		chatMessages.appendChild(messageElement);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	// Add redo functionality
+	document.getElementById('redoMoveBtn').addEventListener('click', () => {
+		if (game) {
+			const move = game.redoMove();
+			if (move) {
+				updateMoveHistory();
+				switchTimer();
+			}
+		}
+	});
+</script>
+
+</body>
+</html>
